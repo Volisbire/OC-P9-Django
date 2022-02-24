@@ -1,3 +1,4 @@
+from contextlib import nullcontext
 from email.policy import default
 from pyexpat import model
 from django.db import models
@@ -7,8 +8,8 @@ import uuid
 class Project(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
-    demo_link = models.CharField(max_length=2000, null=True, blank=True)
-    source_link = models.CharField(max_length=2000, null=True, blank=True)
+    featured_image = models.ImageField(null=True, blank=True, 
+        default="default.jpg")
     tags = models.ManyToManyField('Tag', blank=True)
     vote_total = models.IntegerField(default=0, null=True, blank=True)
     vote_ratio = models.IntegerField(default=0, null=True, blank=True)
