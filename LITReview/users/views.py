@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
+from .models import Profile
 
 # Create your views here.
 def loginPage(request):
@@ -26,4 +27,15 @@ def loginPage(request):
     return render(request, 'users/login_register.html')
 
 def profiles(request):
-    return render(request, 'users/profiles.html')
+    profiles = Profile.objects.all()
+    context = {'profiles': profiles}
+    return render(request, 'users/profiles.html', context)
+
+def userProfile(request, pk):
+    profile = Profile.objects.get(id=pk)
+
+    topInterests = profile.skill_set.exclude(description__exact="")
+    otherInterests = profile.skill_set.filter(description="")
+
+    context = {'profile':profile, 'topInterests':topInterests, "otherInterests":otherInterests}
+    return render(request, 'users/user-profile.html', context)
