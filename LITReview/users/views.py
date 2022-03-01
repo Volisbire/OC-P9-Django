@@ -6,7 +6,7 @@ from django.contrib import messages
 
 from django.contrib.auth.models import User
 from .models import Profile
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, ProfileForm
 
 # Create your views here.
 def loginUser(request):
@@ -54,7 +54,7 @@ def registerUser(request):
             messages.success(request, 'User account was created')
 
             login(request, user)
-            return redirect('profiles')
+            return redirect('edit-account')
 
         else:
             messages.success(request, 'An error has occurred during registration')
@@ -77,3 +77,28 @@ def userProfile(request, pk):
 
     context = {'profile':profile, 'topInterests':topInterests, "otherInterests":otherInterests}
     return render(request, 'users/user-profile.html', context)
+
+@login_required(login_url='login')
+def userAccount(request):
+    profile = request.user.profile
+    interests = profile.skill_set.all()
+    projects = profile.project_set.all()
+
+    context = {'profile':profile, 'interests':interests, 'projects':projects}
+    return render(request, 'users/account.html', context)
+
+@login_required(login_url='login')
+def editAccount(request):
+    profile = request.user.profile
+    form = ProfileForm(instance=profile)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form .is_valid():
+            form.save()
+
+            return redirect('account')
+
+        
+    context = {'form': form}
+    return render(request, 'users/profile_form.html', context)
