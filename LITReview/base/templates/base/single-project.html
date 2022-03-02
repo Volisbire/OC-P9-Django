@@ -23,7 +23,7 @@
           <img class="singleProject__preview" src="{{ project.featured_image.url }}" alt="portfolio thumbnail" />
           <a href="{profile.html}" class="singleProject__developer">{{project.owner.name}}</a>
           <h2 class="singleProject__title">{{project.title}}</h2>
-          <h3 class="singleProject__subtitle">About The reviewers</h3>
+          <h3 class="singleProject__subtitle">Review</h3>
           <div class="singleProject__info">
             {{project.description}}
           </div>
@@ -36,7 +36,7 @@
             {% if request.user.profile.id in project.reviewers %}
               <p>You have already submitted your review for this project</p>
             {% elif request.user.profile == project.owner %}
-              <p>You cannot review your own work</p>
+              <p>You cannot review your own review</p>
             {% elif request.user.is_authenticated %}
             <form class="form" action="{% url 'project' project.id %}" method="POST">
               {% csrf_token %}
