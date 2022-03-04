@@ -150,3 +150,9 @@ def deleteInterest(request, pk):
         
     context = {'object': skill}
     return render(request, 'delete_template.html', context)
+
+
+def favourite(request, pk):
+    profile = Profile.favourite.add(id=pk)
+    context ={'profile':profile}
+    return render(request, 'favourite.html', context)
