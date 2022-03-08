@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -7,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from .models import Profile
 from .forms import CustomUserCreationForm, ProfileForm, SkillForm
+
 
 # Create your views here.
 def loginUser(request):
@@ -23,7 +23,7 @@ def loginUser(request):
             user = User.objects.get(username=username)
         except:
             messages.error(request, 'Username does not exist')
-        
+
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
@@ -32,13 +32,14 @@ def loginUser(request):
         else:
             messages.error(request, 'Username or password is incorrect')
 
-
     return render(request, 'users/login_register.html')
+
 
 def logoutUser(request):
     logout(request)
     messages.error(request, 'User was logged out')
     return redirect('login')
+
 
 def registerUser(request):
     page = 'register'
@@ -59,7 +60,6 @@ def registerUser(request):
         else:
             messages.success(request, 'An error has occurred during registration')
 
-
     context = {'page': page, 'form': form}
     return render(request, 'users/login_register.html', context)
 
@@ -70,10 +70,10 @@ def profiles(request):
     if request.GET.get('search_query'):
         search_query = request.GET.get('search_query')
 
-
     profiles = Profile.objects.filter(name__icontains=search_query)
     context = {'profiles': profiles}
     return render(request, 'users/profiles.html', context)
+
 
 def userProfile(request, pk):
     profile = Profile.objects.get(id=pk)
@@ -81,8 +81,9 @@ def userProfile(request, pk):
     topInterests = profile.skill_set.exclude(description__exact="")
     otherInterests = profile.skill_set.filter(description="")
 
-    context = {'profile':profile, 'topInterests':topInterests, "otherInterests":otherInterests}
+    context = {'profile': profile, 'topInterests': topInterests, "otherInterests": otherInterests}
     return render(request, 'users/user-profile.html', context)
+
 
 @login_required(login_url='login')
 def userAccount(request):
@@ -90,8 +91,9 @@ def userAccount(request):
     interests = profile.skill_set.all()
     projects = profile.project_set.all()
 
-    context = {'profile':profile, 'interests':interests, 'projects':projects}
+    context = {'profile': profile, 'interests': interests, 'projects': projects}
     return render(request, 'users/account.html', context)
+
 
 @login_required(login_url='login')
 def editAccount(request):
@@ -100,14 +102,14 @@ def editAccount(request):
 
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=profile)
-        if form .is_valid():
+        if form.is_valid():
             form.save()
 
             return redirect('account')
 
-        
     context = {'form': form}
     return render(request, 'users/profile_form.html', context)
+
 
 @login_required(login_url='login')
 def createInterest(request):
@@ -122,7 +124,7 @@ def createInterest(request):
             skill.save()
             return redirect('account')
 
-    context = {'form':form}
+    context = {'form': form}
     return render(request, 'users/interest_form.html', context)
 
 
@@ -138,8 +140,9 @@ def updateInterest(request, pk):
             form.save()
             return redirect('account')
 
-    context = {'form':form}
+    context = {'form': form}
     return render(request, 'users/interest_form.html', context)
+
 
 def deleteInterest(request, pk):
     profile = request.user.profile
@@ -147,12 +150,8 @@ def deleteInterest(request, pk):
     if request.method == 'POST':
         skill.delete()
         return redirect('account')
-        
+
     context = {'object': skill}
     return render(request, 'delete_template.html', context)
 
 
-def favourite(request, pk):
-    profile = Profile.favourite.add(id=pk)
-    context ={'profile':profile}
-    return render(request, 'favourite.html', context)

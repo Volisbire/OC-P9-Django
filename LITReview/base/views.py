@@ -4,11 +4,13 @@ from django.contrib.auth.decorators import login_required
 from .models import Project, Tag
 from .forms import ProjectForm, ReviewForm
 
+
 @login_required(login_url="login")
 def projects(request):
     projects = Project.objects.all()
     context = {'projects': projects}
     return render(request, 'base/projects.html', context)
+
 
 @login_required(login_url="login")
 def project(request, pk):
@@ -26,9 +28,10 @@ def project(request, pk):
 
         return redirect('project', pk=projectObj.id)
 
-        #update project votecount
+        # update project votecount
 
     return render(request, 'base/single-project.html', {'project': projectObj, 'form': form})
+
 
 @login_required(login_url="login")
 def createProject(request):
@@ -39,17 +42,18 @@ def createProject(request):
         newtags = request.POST.get('newtags').replace(',', " ").split()
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
-                project = form.save(commit=False)
-                project.owner = profile
-                project.save()
+            project = form.save(commit=False)
+            project.owner = profile
+            project.save()
 
-                for tag in newtags:
-                    tag, created = Tag.objects.get_or_create(name=tag)
-                    project.tags.add(tag)
-                return redirect('account')
+            for tag in newtags:
+                tag, created = Tag.objects.get_or_create(name=tag)
+                project.tags.add(tag)
+            return redirect('account')
 
-    context = {'form':form}
+    context = {'form': form}
     return render(request, "base/project_form.html", context)
+
 
 @login_required(login_url="login")
 def updateProject(request, pk):
@@ -69,8 +73,9 @@ def updateProject(request, pk):
 
             return redirect('account')
 
-    context = {'form':form}
+    context = {'form': form}
     return render(request, "base/project_form.html", context)
+
 
 @login_required(login_url="login")
 def deleteProject(request, pk):
@@ -80,5 +85,5 @@ def deleteProject(request, pk):
         project.delete()
         return redirect('projects')
     context = {'object': project}
-    
+
     return render(request, 'delete_template.html', context)
