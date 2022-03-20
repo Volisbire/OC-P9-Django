@@ -7,7 +7,7 @@
     <div class="container">
       <div class="layout">
         <div class="column column--1of3">
-          <h3 class="singleProject__subtitle">Tools & Stacks</h3>
+         
           <div class="singleProject__toolStack">
 
             {% for tag in project.tags.all %}
@@ -35,8 +35,7 @@
             </h5>
             {% if request.user.profile.id in project.reviewers %}
               <p>You have already submitted your review for this project</p>
-            {% elif request.user.profile == project.owner %}
-              <p>You cannot review your own review</p>
+         
             {% elif request.user.is_authenticated %}
             <form class="form" action="{% url 'project' project.id %}" method="POST">
               {% csrf_token %}
@@ -44,6 +43,7 @@
               <div class="form__field">
                 <label for="formInput#textarea">{{field.label}}</label>
                 {{field}}
+                
               </div>
               {% endfor %}
               <input class="btn btn--sub btn--lg" type="submit" value="Comments" />
@@ -53,7 +53,7 @@
             {% endif %}
             <div class="commentList">
               {% for review in project.review_set.all %}
-              {% if review.body %}
+                  {% if review.body %}
               <div class="comment">
                 <a href="{% url 'user-profile' review.owner.id %}">
                   <img class="avatar avatar--md"
@@ -61,7 +61,9 @@
                 </a>
                 <div class="comment__details">
                   <a href="{% url 'user-profile' review.owner.id %}" class="comment__author">{{review.owner.name}}</a>
-                  <p class="comment__info">{{review.body|linebreaksbr}}</p>
+                
+                  <p class="comment__info">{{review.body|linebreaksbr}}{% if review.owner.id == request.user.profile.id %}<a class="tag tag--pill tag--main settings__btn" href="{% url 'updateReview' review.id %}"><i class="im im-edit"></i> Edit</a>{% endif %}</p>
+                  
                 </div>               
               </div>
               {% endif %}

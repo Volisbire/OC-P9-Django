@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from .models import Project, Tag
+from .models import Project, Review, Tag
 from .forms import ProjectForm, ReviewForm
 
 
@@ -87,3 +87,18 @@ def deleteProject(request, pk):
     context = {'object': project}
 
     return render(request, 'delete_template.html', context)
+
+@login_required(login_url="login")
+def updateReview(request, pk):
+    profile = request.user.profile
+    review = profile.review_set.get(id=pk)
+    form = ReviewForm(instance=review)
+
+    if request.method == 'POST':       
+        form = ReviewForm(request.POST, request.FILES, instance=review)
+        if form.is_valid():
+            review = form.save()
+          
+            return redirect('account')
+    context = {'form': form}
+    return render(request, "base/project_form.html", context)
